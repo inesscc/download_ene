@@ -60,6 +60,21 @@ def get_dataset_list():
     json_data = jsonify({ "datasets": files_dic2})
     return json_data
 
+# Obtener listado de datasets para una encuesta en específico
+@app.route('/datasets/<string:dataset>', methods = ['GET'])
+def get_specific_dataset_list(dataset):
+    path = "data/{dataset}/".format(dataset = dataset)
+    files_dic = {dataset:os.listdir(path)}
+    files_dic2 = {k: [v.replace(".feather", "") for v in l if v.find("feather") != -1  ]  for k, l in files_dic.items()}
+    files_dic2 = {k: [re.sub(".*_", "", v) for v in l ]  for k, l in files_dic2.items()}
+    files_dic2  = {k:sorted(v) for k,v in files_dic2 .items()}
+    
+    json_data = jsonify({ "datasets": files_dic2})
+    return json_data
+
+
+
+
 # Obtener columnas de un dataset
 @app.route('/colnames/<string:dataset>/<string:version>', methods = ['GET'])
 def get_columns(dataset, version):

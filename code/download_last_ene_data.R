@@ -7,7 +7,7 @@ args = commandArgs(trailingOnly=TRUE)
 # start the Selenium server
 rdriver <- rsDriver(browser = "chrome",
                     port = 2122L,
-                    chromever  = "105.0.5195.19" 
+                    chromever  = "105.0.5195.52"
                     #extraCapabilities = list("chromeOptions" = list(args = list('--headless')))  
 )
 remDr <- rdriver[["client"]]

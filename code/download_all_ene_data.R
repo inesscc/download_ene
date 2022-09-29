@@ -10,7 +10,7 @@ rdriver <- rsDriver(browser = "chrome",
 remDr <- rdriver[["client"]]
 
 
-download_data <- function(year) {
+download_data_ene <- function(year) {
   # Entrar al micrositio de la ENE
   remDr$navigate("https://www.ine.cl/estadisticas/sociales/mercado-laboral/ocupacion-y-desocupacion")
   Sys.sleep(2)
@@ -48,7 +48,8 @@ download_data <- function(year) {
 }
 
 # Hay 13 años disponibles
-map(1:13, download_data)
+map(1:13, download_data_ene)
+
 
 
 # Closing server

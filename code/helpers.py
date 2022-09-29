@@ -30,4 +30,12 @@ for encuesta in os.listdir("data/"):
             old_file= "data/" + encuesta + "/" + file
             os.rename(old_file, new_file)
 
-
+# rename esi files
+for encuesta in os.listdir("data/"):
+    for file in os.listdir("data/" + encuesta):
+        if file.find("esi-") != -1:
+            new_name = re.sub("esi-", "esi_", file)
+            new_name = re.sub("---", "-", new_name )
+            new_file = "data/" + encuesta + "/" + new_name 
+            old_file= "data/" + encuesta + "/" + file
+            os.rename(old_file, new_file)

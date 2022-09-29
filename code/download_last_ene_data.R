@@ -5,12 +5,20 @@ args = commandArgs(trailingOnly=TRUE)
 
 
 # start the Selenium server
+
+eCaps <- list(chromeOptions = list(
+  args = c('--headless', '--disable-gpu', '--window-size=1280,800')
+))
+
+
 rdriver <- rsDriver(browser = "chrome",
                     port = 2122L,
-                    chromever  = "105.0.5195.52"
-                    #extraCapabilities = list("chromeOptions" = list(args = list('--headless')))  
+                    chromever  = "105.0.5195.52",
+                    extraCapabilities = eCaps
+
 )
 remDr <- rdriver[["client"]]
+
 
 
 

@@ -136,7 +136,7 @@ download_last_ene <- function(download_folder, api_folder, best_strategy = TRUE)
 ######################
 # Ejecutar la función
 ######################
-download_last_ene(args[[1]], args[[2]], best_strategy = F)
+download_last_ene(args[[1]], args[[2]], best_strategy = args[[3]])
 
 #"/home/klaus/Downloads/", "/home/klaus/ine/importine/data/ene/"
 # download_folder <- "/home/klaus/Downloads/"

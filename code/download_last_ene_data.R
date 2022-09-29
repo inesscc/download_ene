@@ -1,6 +1,8 @@
 library(RSelenium)
 library(tidyverse)
 
+args = commandArgs(trailingOnly=TRUE)
+
 
 # start the Selenium server
 rdriver <- rsDriver(browser = "chrome",
@@ -32,7 +34,7 @@ edit_file_name <- function(x, underscore = T) {
 
 
 
-download_last_ene <- function(download_folder, api_folder) {
+download_last_ene <- function(download_folder, api_folder, best_strategy = TRUE) {
   
   # Entrar al micrositio de la ENE
   remDr$navigate("https://www.ine.cl/estadisticas/sociales/mercado-laboral/ocupacion-y-desocupacion")
@@ -73,48 +75,54 @@ download_last_ene <- function(download_folder, api_folder) {
   file_name <- files[[length(files)]]$getElementText()[[1]]
   file_name_underscore <- edit_file_name(file_name)
   
- 
-  # Descargar en la carpeta de la API. Esta es la copión preferida, pero la página tiene problemas y no siempre se hace la descarga
-  #download.file(download_url,  paste0(api_folder, file_name_underscore ))
-  
   # Este es el nombre con el que se descarga el archivo  
   file_name_no_underscore <- edit_file_name(file_name, F)
-  
+
   # Si el archivo ya existe en la carpeta de descargas, se elimina
   if (file.exists(paste0(download_folder, file_name_no_underscore))) {
     message("El archivo existía en la carpeta de descargas y fue eliminado")
     file.remove(paste0(download_folder, file_name_no_underscore))
   }
-
+  
   # Si el archivo ya existe en la carpeta de la API, se elimina
   if (file.exists(paste0(api_folder, file_name_underscore))) {
     message("El archivo existía en la carpeta de la API y fue eliminado")
     file.remove(paste0(api_folder, file_name_underscore))
   }
   
-
-  # Click para descargar en la carpeta de descargas 
-  files[[length(files)]]$clickElement()  
-  
-  
-  # Esperar a que el archivo esté disponible en la carpeta de descargas. Cortar después de 3 minutos
-  time1 <- Sys.time()
-  total_time <- 0
-  while (!file.exists(paste0(download_folder, file_name_no_underscore)) & total_time <= 180) {
-    Sys.sleep(1)
-    total_time <-  Sys.time() - time1   
+  # La mejor opción para descar es lo que está dentro del if
+  if (best_strategy) {
+    # Descargar en la carpeta de la API. Esta es la copión preferida, pero la página tiene problemas y no siempre se hace la descarga
+    download.file(download_url,  paste0(api_folder, file_name_underscore ))
+    
+  } else {
+    
+    # Click para descargar en la carpeta de descargas 
+    files[[length(files)]]$clickElement()  
+    
+    
+    # Esperar a que el archivo esté disponible en la carpeta de descargas. Cortar después de 3 minutos
+    time1 <- Sys.time()
+    total_time <- 0
+    while (!file.exists(paste0(download_folder, file_name_no_underscore)) & total_time <= 180) {
+      Sys.sleep(1)
+      total_time <-  Sys.time() - time1   
+      
+    }
+    
+    # Copiar archivo desde la carpeta de descargas hasta la carpeta de la API
+    file.copy(from = paste0(download_folder, file_name_no_underscore), to =  paste0(api_folder, file_name_underscore ) )
+    
+    # Eliminar el archivo de la carpeta de descargas
+    if (file.exists(paste0(download_folder, file_name_no_underscore))) {
+      file.remove(paste0(download_folder, file_name_no_underscore))
+      message("El archivo descargado fue eliminado de la carpeta de descargas")
+      
+    }
+    
     
   }
   
-  # Copiar archivo desde la carpeta de descargas hasta la carpeta de la API
-  file.copy(from = paste0(download_folder, file_name_no_underscore), to =  paste0(api_folder, file_name_underscore ) )
-  
-  # Eliminar el archivo de la carpeta de descargas
-  if (file.exists(paste0(download_folder, file_name_no_underscore))) {
-    file.remove(paste0(download_folder, file_name_no_underscore))
-    message("El archivo descargado fue eliminado de la carpeta de descargas")
-    
-  }
   
   # Comprobar que el archivo haya quedado guardado correctamente
   if (file.exists(paste0(api_folder, file_name_underscore))) {
@@ -125,7 +133,19 @@ download_last_ene <- function(download_folder, api_folder) {
   
 }
 
-download_last_ene("/home/klaus/Downloads/", "/home/klaus/ine/importine/data/ene/")
+######################
+# Ejecutar la función
+######################
+download_last_ene(args[[1]], args[[2]], best_strategy = F)
+
+#"/home/klaus/Downloads/", "/home/klaus/ine/importine/data/ene/"
+# download_folder <- "/home/klaus/Downloads/"
+# api_folder <- "/home/klaus/ine/importine/data/ene/"
+
+
+###############
+# Cerrar server 
+###############
 
 # Closing server
 remDr$closeServer()
@@ -134,5 +154,3 @@ rdriver[["server"]]$stop()
 rm(rdriver)
 gc()
 
-download_folder <- "/home/klaus/Downloads/"
-api_folder <- "/home/klaus/ine/importine/data/ene/"

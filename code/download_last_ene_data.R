@@ -3,21 +3,36 @@ library(tidyverse)
 
 args = commandArgs(trailingOnly=TRUE)
 
+# Start selenium server on DO machine
+if (Sys.info()[[3]]) {
+  remDr <- remoteDriver(
+    remoteServerAddr = "localhost",
+    port = 4445L,
+    browserName = "firefox")
+  
+  remDr$open()
+  
+} else {
+  # start the Selenium server on local machine
+  
+  eCaps <- list(chromeOptions = list(
+    args = c('--headless', '--disable-gpu', "--remote-debugging-port=2122")
+  ))
+  
+  
+  rdriver <- rsDriver(browser = "chrome",
+                      port = 2122L,
+                      chromever  = "105.0.5195.52",
+                      extraCapabilities = eCaps
+                      
+  )
+  remDr <- rdriver[["client"]]
+  
+}
 
-# start the Selenium server
-
-eCaps <- list(chromeOptions = list(
-  args = c('--headless', '--disable-gpu', '--window-size=1280,800')
-))
 
 
-rdriver <- rsDriver(browser = "chrome",
-                    port = 2122L,
-                    chromever  = "105.0.5195.52",
-                    extraCapabilities = eCaps
 
-)
-remDr <- rdriver[["client"]]
 
 
 
@@ -85,7 +100,7 @@ download_last_ene <- function(download_folder, api_folder, best_strategy = TRUE)
   
   # Este es el nombre con el que se descarga el archivo  
   file_name_no_underscore <- edit_file_name(file_name, F)
-
+  
   # Si el archivo ya existe en la carpeta de descargas, se elimina
   if (file.exists(paste0(download_folder, file_name_no_underscore))) {
     message("El archivo existía en la carpeta de descargas y fue eliminado")

@@ -1,5 +1,5 @@
 library(RSelenium)
-library(tidyverse)
+library(stringr)
 
 
 # start the Selenium server

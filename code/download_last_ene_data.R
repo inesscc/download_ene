@@ -5,7 +5,11 @@ options(timeout=180)
 args = commandArgs(trailingOnly=TRUE)
 
 # Start selenium server on DO machine
-if (Sys.info()[[3]] == "#142-Ubuntu SMP Fri Aug 26 12:12:57 UTC 2022") {
+# Esto requirió hacer andar un servidor SELENIUM antes 
+# sudo docker pull selenium/standalone-firefox:2.53.0
+# sudo docker run -d -p 4445:4444 selenium/standalone-firefox:2.53.0
+
+if (str_detect(system("cat /etc/os-release", intern = T)[[1]], "Debian") == TRUE) {
   remDr <- remoteDriver(
     remoteServerAddr = "localhost",
     port = 4445L,

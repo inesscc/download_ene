@@ -1,22 +1,39 @@
 library(RSelenium)
 library(stringr)
+options(timeout=180)
 
 args = commandArgs(trailingOnly=TRUE)
 
+# Start selenium server on DO machine
+if (Sys.info()[[3]] == "#142-Ubuntu SMP Fri Aug 26 12:12:57 UTC 2022") {
+  remDr <- remoteDriver(
+    remoteServerAddr = "localhost",
+    port = 4445L,
+    browserName = "firefox")
+  
+  remDr$open()
+  
+} else {
+  # start the Selenium server on local machine
+  
+  eCaps <- list(chromeOptions = list(
+    args = c('--headless', '--disable-gpu', "--remote-debugging-port=2122")
+  ))
+  
+  
+  rdriver <- rsDriver(browser = "chrome",
+                      port = 2122L,
+                      chromever  = "105.0.5195.52",
+                      extraCapabilities = eCaps
+                      
+  )
+  remDr <- rdriver[["client"]]
+  
+}
 
-# start the Selenium server
-
-eCaps <- list(chromeOptions = list(
-  args = c('--headless', '--disable-gpu', '--window-size=1280,800')
-))
 
 
-rdriver <- rsDriver(browser = "chrome",
-                    port = 2122L,
-                    chromever  = "105.0.5195.19", 
-                    extraCapabilities = eCaps
-)
-remDr <- rdriver[["client"]]
+
 
 
 
@@ -84,7 +101,7 @@ download_last_ene <- function(download_folder, api_folder, best_strategy = TRUE)
   
   # Este es el nombre con el que se descarga el archivo  
   file_name_no_underscore <- edit_file_name(file_name, F)
-
+  
   # Si el archivo ya existe en la carpeta de descargas, se elimina
   if (file.exists(paste0(download_folder, file_name_no_underscore))) {
     message("El archivo existía en la carpeta de descargas y fue eliminado")
@@ -146,18 +163,28 @@ download_last_ene <- function(download_folder, api_folder, best_strategy = TRUE)
 download_last_ene(args[[1]], args[[2]], best_strategy = args[[3]])
 
 #"/home/klaus/Downloads/", "/home/klaus/ine/importine/data/ene/"
-# download_folder <- "/home/klaus/Downloads/"
-# api_folder <- "/home/klaus/ine/importine/data/ene/"
+download_folder <- "/home/klaus/Downloads/"
+api_folder <- "/home/klaus/ine/importine/data/ene/"
 
+download_folder <- "/home/klaus/importine/"
+api_folder <- "/home/klaus/importine/data/"
 
 ###############
 # Cerrar server 
 ###############
 
-# Closing server
-remDr$closeServer()
-remDr$close()
-rdriver[["server"]]$stop()
-rm(rdriver)
-gc()
+if (Sys.info()[[3]] == "#142-Ubuntu SMP Fri Aug 26 12:12:57 UTC 2022") {
+ 
+  
+  
+} else {
+  # Closing server
+  remDr$closeServer()
+  remDr$close()
+  rdriver[["server"]]$stop()
+  rm(rdriver)
+  gc()
+  
+}
+
 

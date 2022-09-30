@@ -1,10 +1,11 @@
 library(RSelenium)
 library(tidyverse)
+options(timeout=180)
 
 args = commandArgs(trailingOnly=TRUE)
 
 # Start selenium server on DO machine
-if (Sys.info()[[3]]) {
+if (Sys.info()[[3]] == "#142-Ubuntu SMP Fri Aug 26 12:12:57 UTC 2022") {
   remDr <- remoteDriver(
     remoteServerAddr = "localhost",
     port = 4445L,
@@ -162,18 +163,28 @@ download_last_ene <- function(download_folder, api_folder, best_strategy = TRUE)
 download_last_ene(args[[1]], args[[2]], best_strategy = args[[3]])
 
 #"/home/klaus/Downloads/", "/home/klaus/ine/importine/data/ene/"
-# download_folder <- "/home/klaus/Downloads/"
-# api_folder <- "/home/klaus/ine/importine/data/ene/"
+download_folder <- "/home/klaus/Downloads/"
+api_folder <- "/home/klaus/ine/importine/data/ene/"
 
+download_folder <- "/home/klaus/importine/"
+api_folder <- "/home/klaus/importine/data/"
 
 ###############
 # Cerrar server 
 ###############
 
-# Closing server
-remDr$closeServer()
-remDr$close()
-rdriver[["server"]]$stop()
-rm(rdriver)
-gc()
+if (Sys.info()[[3]] == "#142-Ubuntu SMP Fri Aug 26 12:12:57 UTC 2022") {
+ 
+  
+  
+} else {
+  # Closing server
+  remDr$closeServer()
+  remDr$close()
+  rdriver[["server"]]$stop()
+  rm(rdriver)
+  gc()
+  
+}
+
 

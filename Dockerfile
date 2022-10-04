@@ -64,6 +64,7 @@ RUN echo "*/2 * * * * cd /app && Rscript /app/code/download_last_ene_data.R /app
 RUN echo "" >> /etc/cron.d/download-data 
 RUN chmod 0644 /etc/cron.d/download-data
 RUN crontab /etc/cron.d/download-data
+#RUN cron esta línea debe ser ejecutada en cmd
 
 # configure the container to run in an executed manner
 ENTRYPOINT [ "python" ]

@@ -7,12 +7,13 @@ args = commandArgs(trailingOnly=TRUE)
 # Start selenium server on DO machine
 # Esto requirió hacer andar un servidor SELENIUM antes 
 # sudo docker pull selenium/standalone-firefox:2.53.0
-# sudo docker run -d -p 4445:4444 selenium/standalone-firefox:2.53.0
+# sudo docker run -d -p 4445:4444 selenium/standalone-firefox:2.53.0 
 
-if (str_detect(system("cat /etc/os-release", intern = T)[[1]], "Debian") == TRUE) {
+if (str_detect(system("cat /etc/os-release", intern = T)[[1]], "Debian") == TRUE | 
+    str_detect(system("cat /etc/os-release", intern = T)[[6]], "20.04")) {
   remDr <- remoteDriver(
-    remoteServerAddr = "localhost",
-    port = 4445L,
+    remoteServerAddr = "172.17.0.3",
+    port = 4444L,
     browserName = "firefox")
   
   remDr$open()

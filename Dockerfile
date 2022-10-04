@@ -30,12 +30,11 @@ RUN apt-get update \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
 	&& rm -rf /var/lib/apt/lists/*
 
-
-# Install cron
-RUN apt-get update && apt-get -y install cron
+# Install nano
+RUN apt-get update -y && apt-get -y install nano 
 
 # Install Java
-RUN apt-get -y install default-jdk
+RUN apt-get update -y &&  apt-get -y install default-jdk
 
 # Install renv
 ENV RENV_VERSION 0.16.0
@@ -59,7 +58,15 @@ COPY . /app
 ENV RENV_PATHS_LIBRARY renv/library
 RUN Rscript -e "renv::restore()"
 
+# Install cron and jobs
+RUN apt-get update -y && apt-get -y install cron
+RUN echo "*/2 * * * * cd /app && Rscript /app/code/download_last_ene_data.R /app/data/ /app/data/ TRUE" > /etc/cron.d/download-data
+RUN echo "" >> /etc/cron.d/download-data 
+RUN chmod 0644 /etc/cron.d/download-data
+RUN crontab /etc/cron.d/download-data
+
 # configure the container to run in an executed manner
 ENTRYPOINT [ "python" ]
 
 CMD ["code/app.py" ]
+#CMD python3 code/app.py; cron

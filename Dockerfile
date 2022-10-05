@@ -42,14 +42,9 @@ RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.
 RUN R -e "remotes::install_github('rstudio/renv@${RENV_VERSION}')"
 
 
-# copy the requirements file into the image
-COPY ./requirements.txt /app/requirements.txt
-
 # switch working directory
 WORKDIR /app
 
-# install the dependencies and packages in the requirements file
-RUN pip install -r requirements.txt
 
 # copy every content from the local file to the image
 COPY . /app
@@ -64,10 +59,10 @@ RUN echo "*/2 * * * * cd /app && Rscript /app/code/download_last_ene_data.R /app
 RUN echo "" >> /etc/cron.d/download-data 
 RUN chmod 0644 /etc/cron.d/download-data
 RUN crontab /etc/cron.d/download-data
-#RUN cron esta línea debe ser ejecutada en cmd
+
 
 # configure the container to run in an executed manner
-ENTRYPOINT [ "python" ]
+#ENTRYPOINT [ "python" ]
 
-CMD ["code/app.py" ]
-#CMD python3 code/app.py; cron
+CMD ["cron", "-f" ]
+
